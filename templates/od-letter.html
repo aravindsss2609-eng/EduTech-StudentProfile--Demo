@@ -8,22 +8,34 @@
         :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        
         .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
         .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
         .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
         .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
         .nav-item.active a, .nav-item a:hover { background: var(--primary); color: white; }
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 2rem; }
+        .interactive-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; }
+        
         .form-panel { background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; }
-        input, textarea { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; font-size: 0.9rem; font-family: sans-serif; }
-        .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 1rem; }
+        input { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; font-size: 0.9rem; }
+        
+        .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        
         .preview-panel { background: white; color: #111827; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); min-height: 500px; font-family: 'Times New Roman', Times, serif; font-size: 1.05rem; line-height: 1.6; position: relative; }
         .letter-header { margin-bottom: 2rem; }
         .letter-body { margin-bottom: 2rem; text-align: justify; }
         .letter-footer { margin-top: 3rem; display: flex; justify-content: space-between; }
         .placeholder-text { color: #9ca3af; text-align: center; margin-top: 8rem; font-family: sans-serif; font-style: italic; }
+        
+        /* Table Layout for tracking generated ODs */
+        .log-table { width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.85rem; }
+        .log-table th { padding: 0.75rem; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; }
+        .log-table td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+        .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
     </style>
 </head>
 <body>
@@ -37,94 +49,186 @@
             <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
             <li class="nav-item active"><a href="/od-letter">OD Letter Workspace</a></li>
             <li class="nav-item"><a href="/leave-letter">Leave Letter Workspace</a></li>
+            <li class="nav-item"><a href="/wellness-sanctuary">Wellness Sanctuary</a></li>
             <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
             <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
         </ul>
     </div>
+    
     <div class="main-content">
-        <div class="form-panel">
-            <h3 style="margin-bottom: 1.5rem; color: #3b82f6;"><i class="fa-solid fa-business-time"></i> OD Request Parameters</h3>
-            <div class="form-group">
-                <label>Student Name</label>
-                <input id="od_name" placeholder="John Doe">
-            </div>
-            <div class="form-group">
-                <label>Student ID / Reg No</label>
-                <input id="od_id" placeholder="STU104">
-            </div>
-            <div class="form-group">
-                <label>Department & Track</label>
-                <input id="od_dept" placeholder="Computer Science Engineering">
-            </div>
-            <div class="form-group">
-                <label>Event Name / Description</label>
-                <input id="od_event" placeholder="National AI Hackathon 2026">
-            </div>
-            <div class="form-group">
-                <label>Organizing Institution / Venue</label>
-                <input id="od_venue" placeholder="Tech Institute of Technology">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label>Start Date</label>
-                    <input id="od_start" type="date">
-                </div>
-                <div class="form-group">
-                    <label>End Date</label>
-                    <input id="od_end" type="date">
-                </div>
-            </div>
-            <button class="action-btn" onclick="generateODLetter()">Generate Official Template</button>
+        <div>
+            <h2 style="margin-bottom: 0.25rem;">Official Duty (OD) Request Engine</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Generate official absence letters for student participation in events & symposiums.</p>
         </div>
 
-        <div>
-            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-invoice"></i> Live Formatted Document Preview</h3>
-            <div class="preview-panel" id="letter_preview">
-                <div class="placeholder-text">Input parameter entities on the left to initialize document rendering sequence.</div>
+        <div class="interactive-grid">
+            <div class="form-panel">
+                <h3 style="margin-bottom: 1.5rem; color: #3b82f6;"><i class="fa-solid fa-business-time"></i> OD Request Parameters</h3>
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input id="od_name" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Student ID / Reg No</label>
+                    <input id="od_id" placeholder="STU104">
+                </div>
+                <div class="form-group">
+                    <label>Department & Track</label>
+                    <input id="od_dept" placeholder="Computer Science Engineering">
+                </div>
+                <div class="form-group">
+                    <label>Event Name / Description</label>
+                    <input id="od_event" placeholder="National AI Hackathon 2026">
+                </div>
+                <div class="form-group">
+                    <label>Organizing Institution / Venue</label>
+                    <input id="od_venue" placeholder="Tech Institute of Technology">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input id="od_start" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input id="od_end" type="date">
+                    </div>
+                </div>
+                <button class="action-btn" onclick="generateODLetter()"><i class="fa-solid fa-square-plus"></i> Generate & Log Request</button>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-invoice"></i> Live Formatted Document Preview</h3>
+                <div class="preview-panel" id="letter_preview">
+                    <div class="placeholder-text">Input parameter entities on the left to initialize document rendering sequence.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Live Tracker for logged OD approvals -->
+        <div class="form-panel">
+            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-clock-rotate-left"></i> Active Event Approvals Tracker</h3>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Logged At</th>
+                            <th>Student Subject</th>
+                            <th>ID Code</th>
+                            <th>Event Description</th>
+                            <th>Venue</th>
+                            <th>OD Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="od_table_body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted); font-style: italic; padding: 2rem;">No active student event ODs logged yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        function generateODLetter() {
-            const name = document.getElementById('od_name').value || '[Student Name]';
-            const id = document.getElementById('od_id').value || '[Student ID]';
-            const dept = document.getElementById('od_dept').value || '[Department]';
-            const event = document.getElementById('od_event').value || '[Event/Symposium Name]';
-            const venue = document.getElementById('od_venue').value || '[Hosting Institution]';
-            const start = document.getElementById('od_start').value || '[Start Date]';
-            const end = document.getElementById('od_end').value || '[End Date]';
+        async function fetchODLogs() {
+            try {
+                const response = await fetch('/api/get_od_logs');
+                const logs = await response.json();
+                const tbody = document.getElementById('od_table_body');
+                
+                if (logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); font-style: italic; padding: 2rem;">No active student event ODs logged yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                logs.reverse().forEach(log => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${log.timestamp}</td>
+                            <td><strong>${log.student_name}</strong> <span style="font-size: 0.8rem; color: var(--text-muted);">(${log.department})</span></td>
+                            <td><code>${log.student_id}</code></td>
+                            <td><span class="badge">${log.event_name}</span></td>
+                            <td>${log.venue}</td>
+                            <td><strong>${log.start_date}</strong> to <strong>${log.end_date}</strong></td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Failed to load active OD logs", err);
+            }
+        }
+
+        async function generateODLetter() {
+            const name = document.getElementById('od_name').value;
+            const id = document.getElementById('od_id').value;
+            const dept = document.getElementById('od_dept').value;
+            const event = document.getElementById('od_event').value;
+            const venue = document.getElementById('od_venue').value;
+            const start = document.getElementById('od_start').value;
+            const end = document.getElementById('od_end').value;
+
+            if (!name || !id || !dept || !event || !venue || !start || !end) {
+                alert('Please fill out all parameter fields to register and preview the OD template.');
+                return;
+            }
+
             const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            const preview = document.getElementById('letter_preview');
-            preview.innerHTML = `
-                <div class="letter-header">
-                    <p><strong>Date:</strong> ${today}</p>
-                    <br>
-                    <p><strong>From:</strong><br>${name}<br>Reg ID: ${id}<br>Department of ${dept}</p>
-                    <br>
-                    <p><strong>To:</strong><br>The Head of the Department / Principal,<br>EduConnect Administrative Academy.</p>
-                </div>
-                <p><strong>Subject:</strong> Request for Official Duty (OD) Approval for External Event Attendance</p>
-                <br>
-                <div class="letter-body">
-                    <p>Respected Sir/Madam,</p>
-                    <p style="margin-top: 0.5rem; text-indent: 50px;">I am writing to formally request Official Duty (OD) status allocation for the duration spanning from <strong>${start}</strong> to <strong>${end}</strong>. I have been selected to actively participate representing our institution in the upcoming event titled <strong>"${event}"</strong>, scheduled to take place at <strong>${venue}</strong>.</p>
-                    <p style="margin-top: 0.75rem; text-indent: 50px;">This exposure offers vital professional application opportunities related to my current target track. I ensure that my system course metrics and attendance records will remain stable, and I will proactively complete all missing portfolio workloads upon return.</p>
-                    <p style="margin-top: 0.75rem;">Kindly grant me official attendance clearance for these specified dates.</p>
-                </div>
-                <div class="letter-footer">
-                    <div>
-                        <p>Thanking you,</p>
-                        <br><br>
-                        <p>Yours faithfully,<br><strong>${name}</strong></p>
+            // Post request to log details to the tracking database
+            const response = await fetch('/api/add_od_log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_name: name,
+                    student_id: id,
+                    department: dept,
+                    event_name: event,
+                    venue: venue,
+                    start_date: start,
+                    end_date: end
+                })
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                // Render preview
+                const preview = document.getElementById('letter_preview');
+                preview.innerHTML = `
+                    <div class="letter-header">
+                        <p><strong>Date:</strong> ${today}</p>
+                        <br>
+                        <p><strong>From:</strong><br>${name}<br>Reg ID: ${id}<br>Department of ${dept}</p>
+                        <br>
+                        <p><strong>To:</strong><br>The Head of the Department / Principal,<br>EduConnect Administrative Academy.</p>
                     </div>
-                    <div style="text-align: right; margin-top: auto;">
-                        <p style="border-top: 1px solid #111827; width: 180px; padding-top: 0.25rem;">Authorized Authority Sign</p>
+                    <p><strong>Subject:</strong> Request for Official Duty (OD) Approval for External Event Attendance</p>
+                    <br>
+                    <div class="letter-body">
+                        <p>Respected Sir/Madam,</p>
+                        <p style="margin-top: 0.5rem; text-indent: 50px;">I am writing to formally request Official Duty (OD) status allocation for the duration spanning from <strong>${start}</strong> to <strong>${end}</strong>. I have been selected to actively participate representing our institution in the upcoming event titled <strong>"${event}"</strong>, scheduled to take place at <strong>${venue}</strong>.</p>
+                        <p style="margin-top: 0.75rem; text-indent: 50px;">This exposure offers vital professional application opportunities related to my current target track. I ensure that my system course metrics and attendance records will remain stable, and I will proactively complete all missing portfolio workloads upon return.</p>
+                        <p style="margin-top: 0.75rem;">Kindly grant me official attendance clearance for these specified dates.</p>
                     </div>
-                </div>
-            `;
+                    <div class="letter-footer">
+                        <div>
+                            <p>Thanking you,</p>
+                            <br><br>
+                            <p>Yours faithfully,<br><strong>${name}</strong></p>
+                        </div>
+                        <div style="text-align: right; margin-top: auto;">
+                            <p style="border-top: 1px solid #111827; width: 180px; padding-top: 0.25rem;">Authorized Authority Sign</p>
+                        </div>
+                    </div>
+                `;
+
+                // Reload the active tracking table
+                fetchODLogs();
+            }
         }
+
+        window.onload = fetchODLogs;
     </script>
 </body>
 </html>

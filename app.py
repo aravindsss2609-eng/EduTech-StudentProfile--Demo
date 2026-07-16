@@ -7,7 +7,8 @@ app = Flask(__name__)
 # Core Global In-Memory Databases - Kept completely intact and upgraded safely
 STUDENT_REGISTRY = []
 SYSTEM_REPORTS = []
-WELLNESS_LOGS = [] # Active care tracking database
+WELLNESS_LOGS = []
+OD_REGISTRY = []  # Added to track all official duty student event logs safely!
 
 @app.route('/')
 def index():
@@ -45,7 +46,6 @@ def od_letter():
 def leave_letter():
     return render_template('leave-letter.html')
 
-# --- NEW WELLNESS & MEDICATION ROUTE ---
 @app.route('/wellness-sanctuary')
 def wellness_sanctuary():
     return render_template('wellness-sanctuary.html')
@@ -104,7 +104,32 @@ def add_report():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
-# --- NEW WELLNESS MONITOR API ---
+# --- NEW OD EVENT SYSTEM APIS ---
+
+@app.route('/api/add_od_log', methods=['POST'])
+def add_od_log():
+    data = request.json
+    try:
+        new_od = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "student_name": data.get("student_name") or "Unnamed Student",
+            "student_id": data.get("student_id") or "N/A",
+            "department": data.get("department") or "N/A",
+            "event_name": data.get("event_name") or "N/A",
+            "venue": data.get("venue") or "N/A",
+            "start_date": data.get("start_date") or "N/A",
+            "end_date": data.get("end_date") or "N/A"
+        }
+        OD_REGISTRY.append(new_od)
+        return jsonify({"status": "success", "message": "Official Duty record stored successfully!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+@app.route('/api/get_od_logs', methods=['GET'])
+def get_od_logs():
+    return jsonify(OD_REGISTRY)
+
+# --- WELLNESS MONITOR API ---
 @app.route('/api/add_wellness_log', methods=['POST'])
 def add_wellness_log():
     data = request.json
@@ -112,7 +137,7 @@ def add_wellness_log():
         new_log = {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "student_name": data.get("student_name") or "Anonymous Student",
-            "issue_type": data.get("issue_type"), # "Physical Injury" or "Mental Burnout"
+            "issue_type": data.get("issue_type"),
             "medication_given": data.get("medication_given") or "Rest & Care Observation",
             "dosage": data.get("dosage") or "N/A",
             "support_note": data.get("support_note") or "Keep showing up. You are doing amazing."
