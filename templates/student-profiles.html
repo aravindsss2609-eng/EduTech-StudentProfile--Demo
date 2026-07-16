@@ -14,12 +14,13 @@
         .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
         .nav-item.active a { background: var(--primary); color: white; }
         .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
-        .profiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .profiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .profile-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
         .card-header { display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; }
         .avatar-box { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: white; }
-        .meta-row { margin-bottom: 0.75rem; font-size: 0.95rem; }
-        .meta-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.15rem; font-weight: 600; }
+        .meta-row { margin-bottom: 0.6rem; font-size: 0.9rem; display: flex; flex-direction: column; }
+        .meta-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.15rem; font-weight: 600; }
+        .meta-value { color: #f3f4f6; font-weight: 500; }
         .empty-warn { padding: 3rem; text-align: center; border: 2px dashed var(--border); border-radius: 12px; color: var(--text-muted); margin-top: 2rem; }
     </style>
 </head>
@@ -63,10 +64,33 @@
                     <div class="profile-card">
                         <div class="card-header">
                             <div class="avatar-box"><i class="fa-solid fa-user-graduate"></i></div>
-                            <div>
-                                <h3 style="color:#f9fafb;">ID Ref: ${s.student_id}</h3>
-                                <p style="font-size:0.85rem; color:#ef4444;"><i class="fa-solid fa-heart-pulse"></i> Sentiment: ${s.sentiment_text}</p>
+                            <div style="flex: 1;">
+                                <h3 style="color:#f9fafb; font-size: 1.15rem;">${s.name}</h3>
+                                <p style="font-size:0.8rem; color:var(--text-muted);">Ref ID: ${s.student_id}</p>
+                                <p style="font-size:0.8rem; color:#ef4444; margin-top:0.2rem;"><i class="fa-solid fa-heart-pulse"></i> Sentiment: ${s.sentiment_text}</p>
                             </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+                            <div class="meta-row">
+                                <span class="meta-label"><i class="fa-solid fa-cake-candles"></i> DOB / Age</span>
+                                <span class="meta-value">${s.dob} (${s.age} yrs)</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label"><i class="fa-solid fa-venus-mars"></i> Gender</span>
+                                <span class="meta-value">${s.gender}</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label"><i class="fa-solid fa-phone"></i> Phone</span>
+                                <span class="meta-value" style="font-size:0.85rem;">${s.phone}</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                                <span class="meta-value" style="font-size:0.85rem; word-break: break-all;">${s.email}</span>
+                            </div>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label"><i class="fa-solid fa-location-dot"></i> Address</span>
+                            <span class="meta-value" style="margin-bottom: 0.5rem;">${s.address}</span>
                         </div>
                         <div class="meta-row">
                             <span class="meta-label"><i class="fa-solid fa-diagram-project"></i> Projects Completed</span>
@@ -77,11 +101,12 @@
                             <span style="color:#34d399; font-weight:500;">${s.hobbies}</span>
                         </div>
                         <div class="meta-row">
-                            <span class="meta-label"><i class="fa-solid fa-graduation-cap"></i> Intended / Target Course Track</span>
+                            <span class="meta-label"><i class="fa-solid fa-graduation-cap"></i> Intended Track</span>
                             <span style="color:#fbbf24; font-weight:500;">${s.target_course}</span>
                         </div>
                         <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
                             <span>Att: <strong>${s.attendance_rate}%</strong></span>
+                            <span>Homework: <strong>${s.homework_submission_rate}%</strong></span>
                             <span>Exam Avg: <strong>${s.exam_score_avg}%</strong></span>
                         </div>
                     </div>

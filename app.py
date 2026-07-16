@@ -4,9 +4,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Core Global In-Memory Databases - Starts clean and updates dynamically
+# Core Global In-Memory Databases - Kept completely intact and upgraded safely
 STUDENT_REGISTRY = []
 SYSTEM_REPORTS = []
+WELLNESS_LOGS = [] # Active care tracking database
 
 @app.route('/')
 def index():
@@ -36,6 +37,20 @@ def report_history():
 def student_profiles():
     return render_template('student-profiles.html')
 
+@app.route('/od-letter')
+def od_letter():
+    return render_template('od-letter.html')
+
+@app.route('/leave-letter')
+def leave_letter():
+    return render_template('leave-letter.html')
+
+# --- NEW WELLNESS & MEDICATION ROUTE ---
+@app.route('/wellness-sanctuary')
+def wellness_sanctuary():
+    return render_template('wellness-sanctuary.html')
+
+
 # --- SYSTEM REST API ENDPOINTS ---
 
 @app.route('/api/get_students', methods=['GET'])
@@ -48,11 +63,17 @@ def add_student():
     try:
         new_student = {
             "student_id": data.get("student_id"),
+            "name": data.get("name", "N/A"),
+            "age": data.get("age", "N/A"),
+            "phone": data.get("phone", "N/A"),
+            "email": data.get("email", "N/A"),
+            "address": data.get("address", "N/A"),
+            "dob": data.get("dob", "N/A"),
+            "gender": data.get("gender", "N/A"),
             "attendance_rate": float(data.get("attendance_rate", 0)),
             "homework_submission_rate": float(data.get("homework_submission_rate", 0)),
             "exam_score_avg": float(data.get("exam_score_avg", 0)),
             "sentiment_text": data.get("sentiment_text", "Normal Status"),
-            # Extended Student Metric Fields
             "projects_done": data.get("projects_done", "None Specified"),
             "hobbies": data.get("hobbies", "None Specified"),
             "target_course": data.get("target_course", "None Specified")
@@ -83,6 +104,28 @@ def add_report():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
+# --- NEW WELLNESS MONITOR API ---
+@app.route('/api/add_wellness_log', methods=['POST'])
+def add_wellness_log():
+    data = request.json
+    try:
+        new_log = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "student_name": data.get("student_name") or "Anonymous Student",
+            "issue_type": data.get("issue_type"), # "Physical Injury" or "Mental Burnout"
+            "medication_given": data.get("medication_given") or "Rest & Care Observation",
+            "dosage": data.get("dosage") or "N/A",
+            "support_note": data.get("support_note") or "Keep showing up. You are doing amazing."
+        }
+        WELLNESS_LOGS.append(new_log)
+        return jsonify({"status": "success", "message": "Wellness profile and medical dispatch updated!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+@app.route('/api/get_wellness_logs', methods=['GET'])
+def get_wellness_logs():
+    return jsonify(WELLNESS_LOGS)
+
 @app.route('/api/get_logs', methods=['GET'])
 def get_logs():
     total_students = len(STUDENT_REGISTRY)
@@ -101,6 +144,5 @@ def get_logs():
     ])
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

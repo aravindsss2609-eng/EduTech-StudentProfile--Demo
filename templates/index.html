@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>EduConnect AI Hub - Dashboard Operations</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
     <style>
         :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -16,7 +16,9 @@
         .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
         .form-panel { background: var(--bg-card); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border); }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
-        input { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; }
+        input, select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; font-size: 0.9rem; }
+        input::placeholder { color: #6b7280; }
+        select option { background: var(--bg-base); color: white; }
         .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
@@ -33,6 +35,9 @@
             <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
             <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
             <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+            <li class="nav-item"><a href="/od-letter">OD Letter Workspace</a></li>
+            <li class="nav-item"><a href="/leave-letter">Leave Letter Workspace</a></li>
+            <li class="nav-item"><a href="/wellness-sanctuary">Wellness Sanctuary</a></li>
             <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
             <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
         </ul>
@@ -43,6 +48,18 @@
             <h3 style="margin-bottom: 1rem; color: #3b82f6;">Register Comprehensive Student Analytics Profile Vector</h3>
             <div class="form-grid">
                 <input id="stu_id" placeholder="Student ID (e.g. STU001)">
+                <input id="stu_name" placeholder="Full Name">
+                <input id="stu_age" type="number" placeholder="Age">
+                <input id="stu_phone" type="text" placeholder="Phone (e.g., +1 234 567 890)">
+                <input id="stu_email" type="email" placeholder="Email Address">
+                <input id="stu_dob" type="date" placeholder="Date of Birth">
+                <select id="stu_gender">
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input id="stu_address" placeholder="Physical Address">
                 <input id="stu_att" type="number" step="0.1" placeholder="Attendance Rate %">
                 <input id="stu_hw" type="number" step="0.1" placeholder="Homework Submit %">
                 <input id="stu_perf" type="number" step="0.1" placeholder="Exam Score Avg %">
@@ -61,10 +78,10 @@
                 <thead>
                     <tr>
                         <th>Student ID</th>
+                        <th>Name</th>
                         <th>Attendance</th>
                         <th>Performance</th>
                         <th>Completed Projects</th>
-                        <th>Hobbies & Interests</th>
                         <th>Intended Course</th>
                         <th>Sentiment Status</th>
                     </tr>
@@ -94,10 +111,10 @@
                 body.innerHTML += `
                     <tr>
                         <td><strong>${s.student_id}</strong></td>
+                        <td>${s.name || 'N/A'}</td>
                         <td>${s.attendance_rate}%</td>
                         <td>${s.exam_score_avg}%</td>
                         <td style="color:#60a5fa;">${s.projects_done}</td>
-                        <td style="color:#34d399;">${s.hobbies}</td>
                         <td style="color:#fbbf24;">${s.target_course}</td>
                         <td><span style="color:#ef4444; font-weight:600;">${s.sentiment_text}</span></td>
                     </tr>`;
@@ -106,6 +123,13 @@
         async function submitData() {
             const payload = {
                 student_id: document.getElementById('stu_id').value,
+                name: document.getElementById('stu_name').value || "Unnamed Student",
+                age: document.getElementById('stu_age').value || "N/A",
+                phone: document.getElementById('stu_phone').value || "N/A",
+                email: document.getElementById('stu_email').value || "N/A",
+                dob: document.getElementById('stu_dob').value || "N/A",
+                gender: document.getElementById('stu_gender').value || "Not Set",
+                address: document.getElementById('stu_address').value || "N/A",
                 attendance_rate: document.getElementById('stu_att').value,
                 homework_submission_rate: document.getElementById('stu_hw').value,
                 exam_score_avg: document.getElementById('stu_perf').value,
@@ -122,6 +146,13 @@
             });
             // Reset fields
             document.getElementById('stu_id').value = '';
+            document.getElementById('stu_name').value = '';
+            document.getElementById('stu_age').value = '';
+            document.getElementById('stu_phone').value = '';
+            document.getElementById('stu_email').value = '';
+            document.getElementById('stu_dob').value = '';
+            document.getElementById('stu_gender').value = '';
+            document.getElementById('stu_address').value = '';
             document.getElementById('stu_att').value = '';
             document.getElementById('stu_hw').value = '';
             document.getElementById('stu_perf').value = '';

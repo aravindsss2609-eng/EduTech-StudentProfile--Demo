@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduConnect AI Hub - Leave Application Workspace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
+        .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item.active a, .nav-item a:hover { background: var(--primary); color: white; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .form-panel { background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); height: fit-content; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; }
+        input, select, textarea { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; font-size: 0.9rem; font-family: sans-serif; }
+        select option { background: var(--bg-base); }
+        .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 1rem; }
+        .preview-panel { background: white; color: #111827; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); min-height: 500px; font-family: 'Times New Roman', Times, serif; font-size: 1.05rem; line-height: 1.6; position: relative; }
+        .letter-header { margin-bottom: 2rem; }
+        .letter-body { margin-bottom: 2rem; text-align: justify; }
+        .letter-footer { margin-top: 3rem; display: flex; justify-content: space-between; }
+        .placeholder-text { color: #9ca3af; text-align: center; margin-top: 8rem; font-family: sans-serif; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+            <li class="nav-item"><a href="/student-profiles">Student Profiles Portfolio</a></li>
+            <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
+            <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
+            <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+            <li class="nav-item"><a href="/od-letter">OD Letter Workspace</a></li>
+            <li class="nav-item active"><a href="/leave-letter">Leave Letter Workspace</a></li>
+            <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
+            <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="form-panel">
+            <h3 style="margin-bottom: 1.5rem; color: #3b82f6;"><i class="fa-solid fa-envelope-open-text"></i> Leave Request Parameters</h3>
+            <div class="form-group">
+                <label>Student Name</label>
+                <input id="lv_name" placeholder="Jane Doe">
+            </div>
+            <div class="form-group">
+                <label>Student ID / Reg No</label>
+                <input id="lv_id" placeholder="STU109">
+            </div>
+            <div class="form-group">
+                <label>Leave Classification</label>
+                <select id="lv_reason_type">
+                    <option value="Medical Reasons / Severe Illness">Medical / Sick Leave</option>
+                    <option value="Urgent Personal Affairs">Personal Reason</option>
+                    <option value="Family Bereavement Event">Family Emergency</option>
+                </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Absence Date</label>
+                    <input id="lv_date" type="date">
+                </div>
+                <div class="form-group">
+                    <label>Total Days</label>
+                    <input id="lv_days" type="number" min="1" placeholder="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Detailed Explanation Context</label>
+                <textarea id="lv_desc" rows="3" placeholder="State specific reason or health issue..."></textarea>
+            </div>
+            <button class="action-btn" onclick="generateLeaveLetter()">Generate Leave Template</button>
+        </div>
+
+        <div>
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-print"></i> Live Formatted Document Preview</h3>
+            <div class="preview-panel" id="letter_preview">
+                <div class="placeholder-text">Input parameter entities on the left to initialize document rendering sequence.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateLeaveLetter() {
+            const name = document.getElementById('lv_name').value || '[Student Name]';
+            const id = document.getElementById('lv_id').value || '[Student ID]';
+            const type = document.getElementById('lv_reason_type').value;
+            const target_date = document.getElementById('lv_date').value || '[Target Date]';
+            const days = document.getElementById('lv_days').value || '1';
+            const desc = document.getElementById('lv_desc').value || 'I am unable to attend classes due to personal unforeseen constraints.';
+            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const preview = document.getElementById('letter_preview');
+            preview.innerHTML = `
+                <div class="letter-header">
+                    <p><strong>Date:</strong> ${today}</p>
+                    <br>
+                    <p><strong>From:</strong><br>${name}<br>Reg ID: ${id}</p>
+                    <br>
+                    <p><strong>To:</strong><br>The Class Instructor / Course Coordinator,<br>EduConnect Academic Academy.</p>
+                </div>
+                <p><strong>Subject:</strong> Leave of Absence Application for ${days} Day(s)</p>
+                <br>
+                <div class="letter-body">
+                    <p>Respected Sir/Madam,</p>
+                    <p style="margin-top: 0.5rem; text-indent: 50px;">I am writing to formally request leave clearance for a period of <strong>${days} day(s)</strong> beginning on <strong>${target_date}</strong> due to <strong>${type}</strong>.</p>
+                    <p style="margin-top: 0.75rem; text-indent: 50px;">Specifically, ${desc}</p>
+                    <p style="margin-top: 0.75rem; text-indent: 50px;">I have instructed my cohort team members to save course update records for me so my evaluation scores remain unimpeded. I kindly request you to condone my absence for the designated duration.</p>
+                </div>
+                <div class="letter-footer">
+                    <div>
+                        <p>Thanking you,</p>
+                        <br><br>
+                        <p>Yours sincerely,<br><strong>${name}</strong></p>
+                    </div>
+                    <div style="text-align: right; margin-top: auto;">
+                        <p style="border-top: 1px solid #111827; width: 180px; padding-top: 0.25rem;">Class Mentor Approval</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
