@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduConnect AI Hub - Grievance Archives</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
+        .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item.active a { background: var(--primary); color: white; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .history-stack { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
+        .report-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
+        .urgency-badge { padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        .urg-High { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+        .urg-Medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .urg-Low { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+        .empty-warn { padding: 3rem; text-align: center; border: 2px dashed var(--border); border-radius: 12px; color: var(--text-muted); margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
+      <ul class="nav-list">
+    <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+    <li class="nav-item"><a href="/student-profiles">Student Profiles Portfolio</a></li>
+    <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
+    <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
+    <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+    <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
+    <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+</ul>
+    </div>
+    <div class="main-content">
+        <h2>Archived System Problem Reports Logs</h2>
+        <div id="warn-box" class="empty-warn">No incident rows reported. Navigate to the Report An Issue panel to log system updates.</div>
+        <div class="history-stack" id="history-box" style="display: none;"></div>
+    </div>
+    <script>
+        async function loadReportHistory() {
+            const res = await fetch('/api/get_reports');
+            const reports = await res.json();
+            const box = document.getElementById('history-box');
+            const warn = document.getElementById('warn-box');
+            
+            if(reports.length === 0) {
+                warn.style.display = 'block';
+                box.style.display = 'none';
+                return;
+            }
+            
+            warn.style.display = 'none';
+            box.style.display = 'flex';
+            box.innerHTML = '';
+            
+            reports.reverse().forEach(r => {
+                const urgencyClass = r.urgency_level.startsWith('High') ? 'urg-High' : (r.urgency_level === 'Medium' ? 'urg-Medium' : 'urg-Low');
+                box.innerHTML += `
+                    <div class="report-card">
+                        <div class="card-top">
+                            <div>
+                                <span style="font-weight:bold; font-size:1.1rem; color:#3b82f6;">${r.issue_category}</span>
+                                <span style="margin-left:10px; font-size:0.85rem; color:var(--text-muted);">Filed by: <strong>${r.reporter_name} (${r.reporter_role})</strong></span>
+                            </div>
+                            <span class="urgency-badge ${urgencyClass}">${r.urgency_level}</span>
+                        </div>
+                        <p style="color:#e5e7eb; line-height:1.5; font-size:0.95rem;">${r.description}</p>
+                        <div style="text-align:right; font-size:0.75rem; color:var(--text-muted); margin-top:10px;">
+                            <i class="fa-regular fa-clock"></i> Timestamp: ${r.timestamp}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        window.onload = loadReportHistory;
+    </script>
+</body>
+</html>

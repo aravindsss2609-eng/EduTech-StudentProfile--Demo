@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Behavioral Dynamics Matrix</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
+        .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item.active a { background: var(--primary); color: white; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .matrix-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; height: 280px; }
+        .empty-warn { padding: 3rem; text-align: center; border: 2px dashed var(--border); border-radius: 12px; color: var(--text-muted); margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
+        <ul class="nav-list">
+    <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+    <li class="nav-item"><a href="/student-profiles">Student Profiles Portfolio</a></li>
+    <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
+    <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
+    <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+    <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
+    <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+</ul>
+    </div>
+    <div class="main-content">
+        <h2>Multi-dimensional Behavioral Correlation Matrix</h2>
+        <div id="warn-box" class="empty-warn">No user profiles present. Enter metadata on page one to display behavior matrices.</div>
+        <div id="matrix-box" style="display: none; margin-top: 1.5rem;">
+            <div class="matrix-panel"><canvas id="incidentChart"></canvas></div>
+            <div class="matrix-panel"><canvas id="wellnessChart"></canvas></div>
+        </div>
+    </div>
+    <script>
+        async function runMatrixCalculations() {
+            const res = await fetch('/api/get_students');
+            const students = await res.json();
+            if(students.length === 0) {
+                document.getElementById('warn-box').style.display = 'block';
+                document.getElementById('matrix-box').style.display = 'none';
+                return;
+            }
+            document.getElementById('warn-box').style.display = 'none';
+            document.getElementById('matrix-box').style.display = 'block';
+
+            let tagCounts = { "Stressed/Anxious": 0, "Overwhelmed": 0, "Isolated/Lonely": 0, "Normal": 0 };
+            let trendLines = [];
+            let labels = [];
+
+            students.forEach(s => {
+                const txt = s.sentiment_text.toLowerCase();
+                if(txt.includes('press') || txt.includes('stress')) tagCounts["Stressed/Anxious"]++;
+                else if(txt.includes('overwhelm')) tagCounts["Overwhelmed"]++;
+                else if(txt.includes('lonely') || txt.includes('alone')) tagCounts["Isolated/Lonely"]++;
+                else tagCounts["Normal"]++;
+                trendLines.push(s.attendance_rate);
+                labels.push(s.student_id);
+            });
+
+            new Chart(document.getElementById('incidentChart'), {
+                type: 'bar',
+                data: { labels: Object.keys(tagCounts), datasets: [{ label: 'Incident Density Map Count', data: Object.values(tagCounts), backgroundColor: '#ef4444' }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
+            });
+
+            new Chart(document.getElementById('wellnessChart'), {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Calculated Wellness Index Tracking Profile', data: trendLines, borderColor: '#10b981', tension: 0.2 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
+            });
+        }
+        window.onload = runMatrixCalculations;
+    </script>
+</body>
+</html>

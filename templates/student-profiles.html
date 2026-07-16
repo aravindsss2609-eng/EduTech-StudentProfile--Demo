@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduConnect AI Hub - Student Profiles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
+        .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item.active a { background: var(--primary); color: white; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .profiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .profile-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+        .card-header { display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .avatar-box { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: white; }
+        .meta-row { margin-bottom: 0.75rem; font-size: 0.95rem; }
+        .meta-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.15rem; font-weight: 600; }
+        .empty-warn { padding: 3rem; text-align: center; border: 2px dashed var(--border); border-radius: 12px; color: var(--text-muted); margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+            <li class="nav-item active"><a href="/student-profiles">Student Profiles Portfolio</a></li>
+            <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
+            <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
+            <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+            <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
+            <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>Comprehensive Student Profiles & Interest Portfolios</h2>
+        <div id="warn-box" class="empty-warn">No user profiles present. Enter metadata on page one to generate detailed target portfolios.</div>
+        <div class="profiles-grid" id="profiles-box" style="display: none;"></div>
+    </div>
+    <script>
+        async function fetchStudentPortfolios() {
+            const res = await fetch('/api/get_students');
+            const students = await res.json();
+            const box = document.getElementById('profiles-box');
+            const warn = document.getElementById('warn-box');
+            
+            if(students.length === 0) {
+                warn.style.display = 'block';
+                box.style.display = 'none';
+                return;
+            }
+            
+            warn.style.display = 'none';
+            box.style.display = 'grid';
+            box.innerHTML = '';
+            
+            students.forEach(s => {
+                box.innerHTML += `
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="avatar-box"><i class="fa-solid fa-user-graduate"></i></div>
+                            <div>
+                                <h3 style="color:#f9fafb;">ID Ref: ${s.student_id}</h3>
+                                <p style="font-size:0.85rem; color:#ef4444;"><i class="fa-solid fa-heart-pulse"></i> Sentiment: ${s.sentiment_text}</p>
+                            </div>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label"><i class="fa-solid fa-diagram-project"></i> Projects Completed</span>
+                            <span style="color:#60a5fa; font-weight:500;">${s.projects_done}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label"><i class="fa-solid fa-gamepad"></i> Hobbies & Passions</span>
+                            <span style="color:#34d399; font-weight:500;">${s.hobbies}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label"><i class="fa-solid fa-graduation-cap"></i> Intended / Target Course Track</span>
+                            <span style="color:#fbbf24; font-weight:500;">${s.target_course}</span>
+                        </div>
+                        <div style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
+                            <span>Att: <strong>${s.attendance_rate}%</strong></span>
+                            <span>Exam Avg: <strong>${s.exam_score_avg}%</strong></span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        window.onload = fetchStudentPortfolios;
+    </script>
+</body>
+</html>

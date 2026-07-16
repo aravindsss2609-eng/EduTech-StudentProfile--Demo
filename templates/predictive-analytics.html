@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistical Risk Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg-base: #0b0f19; --bg-sidebar: #111827; --bg-card: #1f2937; --primary: #2563eb; --text-main: #f9fafb; --text-muted: #9ca3af; --border: #374151; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: sans-serif; background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
+        .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item.active a { background: var(--primary); color: white; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+        .chart-wrapper { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; height: 350px; }
+        .empty-warn { padding: 3rem; text-align: center; border: 2px dashed var(--border); border-radius: 12px; color: var(--text-muted); margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
+        <ul class="nav-list">
+    <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+    <li class="nav-item"><a href="/student-profiles">Student Profiles Portfolio</a></li>
+    <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
+    <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
+    <li class="nav-item"><a href="/historical-timeline">System History Timelines</a></li>
+    <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
+    <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+</ul>
+    </div>
+    <div class="main-content">
+        <h2>Predictive Risk Factor Distribution (Real-time Sync)</h2>
+        <div id="warn-box" class="empty-warn">Waiting for live records. Please navigate to Dashboard Operations and submit data to activate data visualizations.</div>
+        <div class="charts-container" id="charts-box" style="display: none;">
+            <div class="chart-wrapper"><canvas id="perfPie"></canvas></div>
+            <div class="chart-wrapper"><canvas id="riskBar"></canvas></div>
+        </div>
+    </div>
+    <script>
+        async function buildCharts() {
+            const res = await fetch('/api/get_students');
+            const students = await res.json();
+            if(students.length === 0) {
+                document.getElementById('warn-box').style.display = 'block';
+                document.getElementById('charts-box').style.display = 'none';
+                return;
+            }
+            document.getElementById('warn-box').style.display = 'none';
+            document.getElementById('charts-box').style.display = 'grid';
+
+            let bands = { "Needs Support (<60)": 0, "Average (60-74)": 0, "Good (75-89)": 0, "Excellent": 0 };
+            let riskDensity = { "High Risk": 0, "Medium Risk": 0, "Low Risk": 0 };
+
+            students.forEach(s => {
+                const perf = s.exam_score_avg;
+                if(perf < 60) { bands["Needs Support (<60)"]++; riskDensity["High Risk"]++; }
+                else if(perf < 75) { bands["Average (60-74)"]++; riskDensity["Medium Risk"]++; }
+                else if(perf < 90) { bands["Good (75-89)"]++; riskDensity["Low Risk"]++; }
+                else { bands["Excellent"]++; riskDensity["Low Risk"]++; }
+            });
+
+            new Chart(document.getElementById('perfPie'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(bands), datasets: [{ data: Object.values(bands), backgroundColor: ['#ef4444','#f59e0b','#3b82f6','#10b981'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } } }
+            });
+
+            new Chart(document.getElementById('riskBar'), {
+                type: 'bar',
+                data: { labels: Object.keys(riskDensity), datasets: [{ label: 'Student Count Profiling Vector', data: Object.values(riskDensity), backgroundColor: '#3b82f6' }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } } }
+            });
+        }
+        window.onload = buildCharts;
+    </script>
+</body>
+</html>
