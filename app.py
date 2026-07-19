@@ -50,6 +50,11 @@ def leave_letter():
 def wellness_sanctuary():
     return render_template('wellness-sanctuary.html')
 
+# --- NEW ROUTE FOR PDF RESOURCES ---
+@app.route('/academic-resources')
+def academic_resources():
+    return render_template('academic-resources.html')
+
 
 # --- SYSTEM REST API ENDPOINTS ---
 
