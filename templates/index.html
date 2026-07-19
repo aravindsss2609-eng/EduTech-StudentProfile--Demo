@@ -11,7 +11,7 @@
         .sidebar { width: 260px; background: var(--bg-sidebar); padding: 1.5rem; border-right: 1px solid var(--border); }
         .brand { font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
         .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; }
+        .nav-item a { display: block; padding: 0.75rem 1rem; color: var(--text-muted); text-decoration: none; border-radius: 8px; transition: 0.3s; }
         .nav-item.active a, .nav-item a:hover { background: var(--primary); color: white; }
         .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
         .form-panel { background: var(--bg-card); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border); }
@@ -19,7 +19,8 @@
         input, select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 0.6rem; border-radius: 6px; width: 100%; font-size: 0.9rem; }
         input::placeholder { color: #6b7280; }
         select option { background: var(--bg-base); color: white; }
-        .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .action-btn { background: var(--primary); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .action-btn:hover { background: #1d4ed8; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
         th { color: var(--text-muted); }
@@ -27,10 +28,10 @@
     </style>
 </head>
 <body>
-   <div class="sidebar">
+    <div class="sidebar">
         <div class="brand"><i class="fa-solid fa-brain"></i> EduConnect AI</div>
         <ul class="nav-list">
-            <li class="nav-item"><a href="/">Dashboard Operations</a></li>
+            <li class="nav-item active"><a href="/">Dashboard Operations</a></li>
             <li class="nav-item"><a href="/student-profiles">Student Profiles Portfolio</a></li>
             <li class="nav-item"><a href="/predictive-analytics">Statistical Risk Analytics</a></li>
             <li class="nav-item"><a href="/behavioral-matrix">Behavioral Dynamics Matrix</a></li>
@@ -40,6 +41,8 @@
             <li class="nav-item"><a href="/wellness-sanctuary">Wellness Sanctuary</a></li>
             <li class="nav-item"><a href="/report-issue">Report An Issue</a></li>
             <li class="nav-item"><a href="/report-history">Grievance Archives</a></li>
+            <!-- NEW ACADEMIC RESOURCES LINK ADDED HERE -->
+            <li class="nav-item"><a href="/academic-resources">Academic Resources Hub</a></li>
         </ul>
     </div>
     <div class="main-content">
