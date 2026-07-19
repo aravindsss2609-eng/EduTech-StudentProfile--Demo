@@ -1,14 +1,20 @@
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
+from werkzeug.utils import secure_filename
 from datetime import datetime
 
 app = Flask(__name__)
+
+# Configure Upload Folder for Academic Resources
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Core Global In-Memory Databases - Kept completely intact and upgraded safely
 STUDENT_REGISTRY = []
 SYSTEM_REPORTS = []
 WELLNESS_LOGS = []
-OD_REGISTRY = []  # Added to track all official duty student event logs safely!
+OD_REGISTRY = []
+ACADEMIC_RESOURCES = [] # NEW: Tracks dynamically uploaded files!
 
 @app.route('/')
 def index():
@@ -50,7 +56,6 @@ def leave_letter():
 def wellness_sanctuary():
     return render_template('wellness-sanctuary.html')
 
-# --- NEW ROUTE FOR PDF RESOURCES ---
 @app.route('/academic-resources')
 def academic_resources():
     return render_template('academic-resources.html')
@@ -110,7 +115,6 @@ def add_report():
         return jsonify({"status": "error", "message": str(e)}), 400
 
 # --- NEW OD EVENT SYSTEM APIS ---
-
 @app.route('/api/add_od_log', methods=['POST'])
 def add_od_log():
     data = request.json
@@ -172,6 +176,41 @@ def get_logs():
     return jsonify([
         {"date": datetime.now().strftime("%Y-%m-%d (Active Session)"), "anxiety": anxiety_factor, "velocity": xp_velocity, "safety": safety_clearance}
     ])
+
+# --- ACADEMIC RESOURCES APIS ---
+@app.route('/api/upload_resource', methods=['POST'])
+def upload_resource():
+    if 'file' not in request.files:
+        return jsonify({"status": "error", "message": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"status": "error", "message": "No file selected"}), 400
+    
+    title = request.form.get('title', 'Untitled Resource')
+    description = request.form.get('description', 'No description provided.')
+    category = request.form.get('category', 'unit')
+    
+    if file:
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
+        
+        new_resource = {
+            "id": len(ACADEMIC_RESOURCES) + 1,
+            "title": title,
+            "description": description,
+            "category": category, # Expected: 'unit', 'assignment', or 'syllabus'
+            "filepath": f"/static/uploads/{filename}",
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M")
+        }
+        ACADEMIC_RESOURCES.append(new_resource)
+        return jsonify({"status": "success", "message": "Resource successfully uploaded!"})
+
+@app.route('/api/get_resources', methods=['GET'])
+def get_resources():
+    return jsonify(ACADEMIC_RESOURCES)
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
